@@ -160,7 +160,7 @@ jobs:
           name: db
       # deploy dacpac calling my dacpac-deploy task
       - name: update database schema using dacpac deploy action
-        uses: automagicallyio/maxtest-deploy@master
+        uses: automagicallyio/maxtest-deploy@v2
         with:
           connectionString: ${{ secrets.DB_CONNECTION_STRING }}
           dacpac: 'MercuryHealthDB.dacpac'
