@@ -15,4 +15,4 @@ Also:
 - The pull request and commit should have a useful title.
 - Pull Requests without a personal comment will not be accepted until one is added.
 
-Thank you!
+Thank you! 
