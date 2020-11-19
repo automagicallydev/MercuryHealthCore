@@ -161,7 +161,7 @@ jobs:
           name: db
       # deploy dacpac calling my dacpac-deploy task
       - name: update database schema using dacpac deploy action
-        uses: automagicallyio/sqlpackage_dacpac_deploy@v2
+        uses: automagicallyio/sqlpackage_dacpac_deploy@master
         with:
           connectionString: ${{ secrets.DB_CONNECTION_STRING }}
           dacpac: 'MercuryHealthDB.dacpac'
