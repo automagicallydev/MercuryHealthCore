@@ -145,7 +145,7 @@ jobs:
 
       # Deploy build artifact to Azure App Service
       - name: Publish website to Azure App Service
-        uses: azure/appservice-actions/webapp@master
+        uses: azure/webapps-deploy@v2
         with:
           app-name: maxtestmhc-beta  # Replace with your app name
 
