@@ -1,0 +1,139 @@
+name: Mercury Health Core CI
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '.github/**'
+
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        required: true
+        default: 'warning'
+jobs:
+  buildWeb:
+    # build .net core web app
+    runs-on: ubuntu-18.04
+    
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+    
+    - name: Build with dotnet
+      run: |
+        echo ls
+        ls
+        dotnet build Web/MercuryHealthCore.csproj --configuration Release
+
+    - name: Test with dotnet
+      run: dotnet test Web/MercuryHealthCore.csproj --configuration Release
+      
+    - name: Package everything up with dotnet
+      run: dotnet publish Web/MercuryHealthCore.csproj --configuration Release
+
+    - name: publish build artifacts back to GitHub
+      uses: actions/upload-artifact@master
+      with:
+        name: webapp
+        path: Web/bin/Release/netcoreapp2.2/publish
+
+    - name: zip webapp
+      run: |
+        zip --junk-paths webapp Web/bin/Release/netcoreapp2.2/publish
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./webapp.zip
+        asset_name: webapp.zip
+        asset_content_type: application/zip
+
+  # build database schema, build artifact is the dacpac
+  buildDatabase:
+    runs-on: windows-latest
+    
+    steps:
+    # checkout code from repo
+    - name: checkout repo
+      uses: actions/checkout@v1
+
+    # use msbuild to build VS solution which has the SSDT project
+    - name: build solution
+      run: |
+        echo "Building MercuryHealthCore.sln"
+        & "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" MercuryHealthDB\MercuryHealthDB.sqlproj
+
+    # publish build artifact (dacpac) back to github
+    - name: publish build artifacts back to GitHub
+      uses: actions/upload-artifact@master
+      with:
+        name: db
+        path: MercuryHealthDB\bin\Debug
+
+    - name: zip db
+      run: |
+        zip --junk-paths db MercuryHealthDB\bin\Debug
+
+    - name: Upload Release Asset
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ jobs.buildWeb.steps.create_release.outputs.upload_url }}
+        asset_path: ./db.zip
+        asset_name: db.zip
+        asset_content_type: application/zip
+
+  # publish IaC as build artifact
+  uploadIaC:
+    runs-on: windows-latest
+
+    steps:
+    # checkout code from repo
+    - name: checkout repo
+      uses: actions/checkout@v1
+
+    # upload IaC folder
+    - name: upload IaC
+      uses: actions/upload-artifact@master
+      with:
+        name: IaC
+        path: IaC
+
+    - name: zip IaC
+      run: |
+        zip --junk-paths IaC IaC
+
+    - name: Upload Release Asset
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ jobs.buildWeb.steps.create_release.outputs.upload_url }}
+        asset_path: ./IaC.zip
+        asset_name: IaC.zip
+        asset_content_type: application/zip
