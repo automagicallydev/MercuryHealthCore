@@ -49,7 +49,7 @@ jobs:
     - name: zip webapp
       run: |
         cd Web/bin/Release/netcoreapp2.2/publish
-        zip -r webapp.zip  ./*
+        zip -r ${{ github.workspace }}/webapp.zip  ./*
 
     - name: create webapp release
       id: create_release
