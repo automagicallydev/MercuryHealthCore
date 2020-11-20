@@ -17,7 +17,9 @@ jobs:
   buildWeb:
     # build .net core web app
     runs-on: ubuntu-18.04
-    
+    outputs:
+      output1: ${{ steps.create_release.outputs.upload_url }}
+
     steps:
     - uses: actions/checkout@v1
 
@@ -54,8 +56,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: webapp - ${{ github.ref }} - ${{ github.run_id }}
-        release_name: webapp - ${{ github.ref }} - ${{ github.run_id }}
+        tag_name: pipeline-${{ github.run_id }}
+        release_name: pipeline-${{ github.run_id }}
         draft: false
         prerelease: false
 
@@ -72,6 +74,7 @@ jobs:
 
   # build database schema, build artifact is the dacpac
   buildDatabase:
+    needs: buildWeb
     runs-on: windows-latest
     
     steps:
@@ -96,30 +99,20 @@ jobs:
       run: |
         powershell Compress-Archive MercuryHealthDB\bin\Debug db.zip
 
-    - name: create db release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: db - ${{ github.ref }} - ${{ github.run_id }}
-        release_name: db - ${{ github.ref }} - ${{ github.run_id }}
-        draft: false
-        prerelease: false
-
     - name: upload release asset
       id: upload-release-asset 
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{needs.buildWeb.outputs.output1}}
         asset_path: ./db.zip
         asset_name: db.zip
         asset_content_type: application/zip
 
   # publish IaC as build artifact
   uploadIaC:
+    needs: buildWeb
     runs-on: windows-latest
 
     steps:
@@ -138,24 +131,13 @@ jobs:
       run: |
         powershell Compress-Archive IaC IaC.zip
 
-    - name: create IaC release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: IaC - ${{ github.ref }} - ${{ github.run_id }}
-        release_name: IaC - ${{ github.ref }} - ${{ github.run_id }}
-        draft: false
-        prerelease: false
-
     - name: Upload Release Asset
       id: upload-release-asset 
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{needs.buildWeb.outputs.output1}}
         asset_path: ./IaC.zip
         asset_name: IaC.zip
         asset_content_type: application/zip
