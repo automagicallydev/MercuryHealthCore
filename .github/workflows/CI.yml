@@ -45,8 +45,10 @@ jobs:
         path: Web/bin/Release/netcoreapp2.2/publish
 
     - name: zip webapp
-      run: |
-        zip --junk-paths webapp Web/bin/Release/netcoreapp2.2/publish
+      uses: thedoctor0/zip-release@master
+      with:
+        path: 'Web/bin/Release/netcoreapp2.2/publish'
+        filename: 'webapp.zip'
 
     - name: create webapp release
       id: create_release
@@ -55,7 +57,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.ref }}
-        release_name: webapp ${{ github.ref }}
+        release_name: webapp ${{ github.ref }} - ${{ env.GITHUB_RUN_NUMBER }
         draft: false
         prerelease: false
 
@@ -93,8 +95,10 @@ jobs:
         path: MercuryHealthDB\bin\Debug
 
     - name: zip db
-      run: |
-        zip --junk-paths db MercuryHealthDB\bin\Debug
+      uses: thedoctor0/zip-release@master
+      with:
+        path: 'MercuryHealthDB\bin\Debug'
+        filename: 'db.zip'
 
     - name: create db release
       id: create_release
@@ -103,7 +107,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.ref }}
-        release_name: db ${{ github.ref }}
+        release_name: db ${{ github.ref }} - ${{ env.GITHUB_RUN_NUMBER }
         draft: false
         prerelease: false
 
@@ -135,8 +139,10 @@ jobs:
         path: IaC
 
     - name: zip IaC
-      run: |
-        zip --junk-paths IaC IaC
+      uses: thedoctor0/zip-release@master
+      with:
+        path: 'IaC'
+        filename: 'IaC.zip'
 
     - name: create IaC release
       id: create_release
@@ -145,7 +151,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.ref }}
-        release_name: IaC ${{ github.ref }}
+        release_name: IaC ${{ github.ref }} - ${{ env.GITHUB_RUN_NUMBER }
         draft: false
         prerelease: false
 
