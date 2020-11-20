@@ -55,7 +55,7 @@ jobs:
     - name: build solution
       run: |
         echo "Building MercuryHealthCore.sln"
-        & "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" /t:Restore,Build MercuryHealthCore.sln
+        & "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" MercuryHealthDB\MercuryHealthDB.sqlproj
     # publish build artifact (dacpac) back to github
     - name: publish build artifacts back to GitHub
       uses: actions/upload-artifact@master
