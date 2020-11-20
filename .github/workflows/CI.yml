@@ -48,7 +48,8 @@ jobs:
 
     - name: zip webapp
       run: |
-        zip -r webapp.zip  Web/bin/Release/netcoreapp2.2/publish
+        cd Web/bin/Release/netcoreapp2.2/publish
+        zip -r webapp.zip  ./*
 
     - name: create webapp release
       id: create_release
@@ -97,7 +98,7 @@ jobs:
 
     - name: zip db
       run: |
-        powershell Compress-Archive MercuryHealthDB\bin\Debug db.zip
+        powershell Compress-Archive -Path MercuryHealthDB\bin\Debug\* -DestinationPath db.zip
 
     - name: upload release asset
       id: upload-release-asset 
@@ -129,7 +130,7 @@ jobs:
 
     - name: zip IaC
       run: |
-        powershell Compress-Archive IaC IaC.zip
+        powershell Compress-Archive -Path IaC\* -DestinationPath IaC.zip
 
     - name: Upload Release Asset
       id: upload-release-asset 
