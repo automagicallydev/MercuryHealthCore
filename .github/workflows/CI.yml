@@ -54,8 +54,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: webapp ${{ github.ref }} - ${{ github.run_number }}
+        tag_name: webapp - ${{ github.ref }} - ${{ github.run_id }}
+        release_name: webapp - ${{ github.ref }} - ${{ github.run_id }}
         draft: false
         prerelease: false
 
@@ -102,8 +102,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: db ${{ github.ref }} - ${{ github.run_number }}
+        tag_name: db - ${{ github.ref }} - ${{ github.run_id }}
+        release_name: db - ${{ github.ref }} - ${{ github.run_id }}
         draft: false
         prerelease: false
 
@@ -144,8 +144,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: IaC ${{ github.ref }} - ${{ github.run_number }}
+        tag_name: IaC - ${{ github.ref }} - ${{ github.run_id }}
+        release_name: IaC - ${{ github.ref }} - ${{ github.run_id }}
         draft: false
         prerelease: false
 
