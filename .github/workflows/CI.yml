@@ -45,9 +45,8 @@ jobs:
         path: Web/bin/Release/netcoreapp2.2/publish
 
     - name: zip webapp
-      uses: montudor/action-zip@v0.1.1
-      with:
-        args: zip -qq -r webapp.zip Web/bin/Release/netcoreapp2.2/publish
+      run: |
+        zip -r webapp.zip  Web/bin/Release/netcoreapp2.2/publish
 
     - name: create webapp release
       id: create_release
@@ -94,9 +93,8 @@ jobs:
         path: MercuryHealthDB\bin\Debug
 
     - name: zip db
-      uses: montudor/action-zip@v0.1.1
-      with:
-        args: zip -qq -r db.zip MercuryHealthDB\bin\Debug
+      run: |
+        powershell Compress-Archive MercuryHealthDB\bin\Debug db.zip
 
     - name: create db release
       id: create_release
@@ -137,9 +135,8 @@ jobs:
         path: IaC
 
     - name: zip IaC
-      uses: montudor/action-zip@v0.1.1
-      with:
-        args: zip -qq -r IaC.zip IaC
+      run: |
+        powershell Compress-Archive IaC IaC.zip
 
     - name: create IaC release
       id: create_release
