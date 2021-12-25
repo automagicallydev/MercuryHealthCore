@@ -4,7 +4,7 @@
 
 *Approx 10-15 lines*.
 
-The aim of this project is …
+The aim of this project is this
 
 We’re solving … problem but you may also use this project to …
 
